@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\InterviewCRUD_NetCore.Repository\InterviewCRUD_NetCore.Repository.csproj" />
+    <ProjectReference Include="..\InterviewCRUD_NetCore.Utility\InterviewCRUD_NetCore.Utility.csproj" />
+  </ItemGroup>
+
+</Project>
