@@ -30,7 +30,8 @@ namespace InterviewCRUD_NetCore
             services.AddDbContext<CourseselectionContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddControllersWithViews();
+            services.AddAutoMapper(typeof(Startup));
+            services.AddControllersWithViews().AddNewtonsoftJson();
 
             services.AddTransient<IStudentService, StudentService>();
             services.AddTransient<ICourseService, CourseService>();

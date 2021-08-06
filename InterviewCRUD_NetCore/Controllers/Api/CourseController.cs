@@ -1,4 +1,5 @@
 ﻿
+using AutoMapper;
 using InterviewCRUD_NetCore.Models.ViewModels;
 using InterviewCRUD_NetCore.Repository.Models.CustomExceptions;
 using InterviewCRUD_NetCore.Repository.Models.DTO;
@@ -15,9 +16,11 @@ namespace InterviewCRUD_NetCore.Controllers.Api
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
-        public CourseController(ICourseService courseService)
+        private readonly IMapper _mapper;
+        public CourseController(ICourseService courseService, IMapper mapper)
         {
             _courseService = courseService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -42,7 +45,7 @@ namespace InterviewCRUD_NetCore.Controllers.Api
 
             try
             {
-                _courseService.AddNewCourse(AutoMap.Mapper.Map<CourseDTO>(course));
+                _courseService.AddNewCourse(_mapper.Map<CourseDTO>(course));
                 return Ok();
             }
             catch(DataErrorException ex)
@@ -68,7 +71,7 @@ namespace InterviewCRUD_NetCore.Controllers.Api
 
             try
             {
-                _courseService.ReplaceCourse(number, AutoMap.Mapper.Map<CourseDTO>(editCourse));
+                _courseService.ReplaceCourse(number, _mapper.Map<CourseDTO>(editCourse));
                 return Ok();
             }
             catch(DataErrorException ex)
@@ -85,7 +88,7 @@ namespace InterviewCRUD_NetCore.Controllers.Api
                 return BadRequest(ErrorAnalyze.GetModelStateError(ModelState));
             }
 
-            _courseService.EditCourse(AutoMap.Mapper.Map<CourseDTO>(editCourse));
+            _courseService.EditCourse(_mapper.Map<CourseDTO>(editCourse));
             return Ok();
         }
     }

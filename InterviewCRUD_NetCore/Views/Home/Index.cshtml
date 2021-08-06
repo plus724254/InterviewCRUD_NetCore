@@ -1,8 +1,133 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿<div id="studentPage" class="row mt-5">
+    <div class="col-md-12">
+        <div class="col-md-12 mt-2">
+            <label>學號</label>
+            <input name="number" v-model="studentEdit.number">
+            <label>生日</label>
+            <input name="birthday" v-model="studentEdit.birthday">
+        </div>
+        <div class="col-md-12 mt-2">
+            <label>姓名</label>
+            <input name="name" v-model="studentEdit.name">
+            <label>信箱</label>
+            <input name="email" v-model="studentEdit.email">
+        </div>
+        <div class="col-md-12 mt-2">
+            <button v-if="editMode" v-on:click="saveEdit" type="button" class="btn btn-warning">儲存</button>
+            <button v-else v-on:click="addNewStudent" type="button" class="btn btn-primary">新增</button>
+        </div>
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th>學號</th>
+                    <th>姓名</th>
+                    <th>生日</th>
+                    <th>Email</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(student, index) in students">
+                    <th>{{student.number}}</th>
+                    <th>{{student.birthday}}</th>
+                    <th>{{student.name}}</th>
+                    <th>{{student.email}}</th>
+                    <th>
+                        <button :data-number="student.number" v-on:click="saveDelete($event)" type="button" class="btn btn-danger">刪除</button>
+                        <button :data-number="student.number" v-on:click="edit($event)" type="button" class="btn btn-warning">編輯</button>
+                    </th>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
 </div>
+
+<script>
+    var studentPage = new Vue({
+        el: '#studentPage',
+        data: {
+            modifyNumber : null,
+            studentEdit: {
+                number: null,
+                birthday: null,
+                name: null,
+                email: null,
+            },
+            editMode: false,
+            students: null,
+        },
+        methods: {
+            saveDelete(event) {
+                let targetNumber = event.currentTarget.dataset.number;
+                axios
+                    .delete('/api/student/'+targetNumber)
+                    .then(response => {
+                        let index = this.students.findIndex(x => x == this.students.find(x => x.number == targetNumber));
+                        this.students.splice(index, 1);
+                        alert("刪除成功");
+                    })
+                    .catch(function (error) {
+                        alert(error.response.data.message);
+                    });
+            },
+            edit(event) {
+                this.editMode = true;
+                this.modifyNumber = event.currentTarget.dataset.number;
+                let editTarget = this.students.find(x => x.number == this.modifyNumber);
+                Object.assign(this.studentEdit, editTarget);
+            },
+            saveEdit() {
+                if (this.modifyNumber == this.studentEdit.number) {
+                    axios
+                        .patch('/api/student', this.studentEdit)
+                        .then(response => {
+                            let editTarget = this.students.find(x => x.number == this.modifyNumber);
+                            Object.assign(editTarget, this.studentEdit);
+                            alert("修改成功");
+                            this.editMode = false;
+                        })
+                        .catch(function (error) {
+                            globalErrorHandle(error);
+                        });
+                } else {
+                    axios
+                        .put('/api/student/'+this.modifyNumber, this.studentEdit)
+                        .then(response => {
+                            let editTarget = this.students.find(x => x.number == this.modifyNumber);
+                            Object.assign(editTarget, this.studentEdit);
+                            this.modifyNumber = this.studentEdit.number;
+                            alert("修改成功");
+                            this.editMode = false;
+                        })
+                        .catch(function (error) {
+                            globalErrorHandle(error);
+                        });
+                }
+            },
+            addNewStudent() {
+                axios
+                    .post('/api/student', this.studentEdit)
+                    .then(response => {
+                        let newStudent = Object.assign({}, this.studentEdit);
+                        this.students.push(newStudent);
+                        alert("新增成功");
+                    })
+                    .catch(function (error) {
+                        globalErrorHandle(error);
+                    });
+            },
+        },
+        mounted() {
+            axios
+                .get('/api/student')
+                .then(response => (this.students = response.data))
+                .catch(function (error) {
+                    globalErrorHandle(error);
+                });
+        }
+    });
+
+</script>

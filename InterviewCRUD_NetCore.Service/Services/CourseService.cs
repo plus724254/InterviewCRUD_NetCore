@@ -2,6 +2,7 @@
 using InterviewCRUD_NetCore.Repository.Models.CustomExceptions;
 using InterviewCRUD_NetCore.Repository.Models.DTO;
 using InterviewCRUD_NetCore.Repository.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -67,7 +68,7 @@ namespace InterviewCRUD_NetCore.Service.Services
 
                 _courseRepository.SaveChanges();
             }
-            catch(DataErrorException)
+            catch(Exception)
             {
                 throw new DataErrorException("尚有課程無法修改課號");
             }

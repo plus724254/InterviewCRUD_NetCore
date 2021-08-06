@@ -1,10 +1,10 @@
-﻿using InterviewCRUD_NetCore.Models.ViewModels;
+﻿using AutoMapper;
+using InterviewCRUD_NetCore.Models.ViewModels;
 using InterviewCRUD_NetCore.Repository.Models.CustomExceptions;
 using InterviewCRUD_NetCore.Repository.Models.DTO;
 using InterviewCRUD_NetCore.Service.Services;
 using InterviewCRUD_NetCore.Tools;
 using Microsoft.AspNetCore.Mvc;
-using AutoMap = InterviewCRUD_NetCore.Tools.AutoMappers.AutoMap;
 
 namespace InterviewCRUD_NetCore.Controllers.Api
 {
@@ -13,9 +13,11 @@ namespace InterviewCRUD_NetCore.Controllers.Api
     public class StudentController : ControllerBase
     {
         private readonly IStudentService _studentService;
-        public StudentController(IStudentService studentService)
+        private readonly IMapper _mapper;
+        public StudentController(IStudentService studentService, IMapper mapper)
         {
             _studentService = studentService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -40,7 +42,7 @@ namespace InterviewCRUD_NetCore.Controllers.Api
 
             try
             {
-                _studentService.AddNewStudent(AutoMap.Mapper.Map<StudentDTO>(student));
+                _studentService.AddNewStudent(_mapper.Map<StudentDTO>(student));
                 return Ok();
             }
             catch(DataErrorException ex)
@@ -67,7 +69,7 @@ namespace InterviewCRUD_NetCore.Controllers.Api
 
             try
             {
-                _studentService.ReplaceStudent(number, AutoMap.Mapper.Map<StudentDTO>(editStudent));
+                _studentService.ReplaceStudent(number, _mapper.Map<StudentDTO>(editStudent));
                 return Ok();
             }
             catch (DataErrorException ex)
@@ -84,7 +86,7 @@ namespace InterviewCRUD_NetCore.Controllers.Api
                 return BadRequest(ErrorAnalyze.GetModelStateError(ModelState));
             }
 
-            _studentService.EditStudent(AutoMap.Mapper.Map<StudentDTO>(editStudent));
+            _studentService.EditStudent(_mapper.Map<StudentDTO>(editStudent));
             return Ok();
         }
     }
