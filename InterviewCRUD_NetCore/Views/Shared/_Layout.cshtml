@@ -15,8 +15,6 @@
 
     <script>
         function globalErrorHandle(error) {
-            console.log(error.response);
-            console.log(error.response.data.errors);
             if (error.response.status == 400) {
                 let msg;
                 try {
